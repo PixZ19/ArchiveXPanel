@@ -336,13 +336,26 @@ stage_merge() {
     cp -f "$ARCHIVE_SOURCE/config/archive.php" "$PTERO_PATH/config/archive.php"
     ok "  config/archive.php installed"
 
-    # 4e. Replace the frontend entirely (Pterodactyl's React → Archive's React)
-    log "  Replacing React frontend..."
+    # 4e. Replace the React frontend scripts (Pterodactyl's React → Archive's React)
+    #     CRITICAL: Do NOT delete resources/views — Pterodactyl's controllers reference
+    #     templates/base/core.blade.php, templates/wrapper.blade.php, auth views, admin
+    #     views, etc. Deleting them causes "View [templates.base.core] not found" 500s.
+    #     Only replace resources/scripts (the React app) and override specific views.
+    log "  Replacing React frontend scripts..."
     rm -rf "$PTERO_PATH/resources/scripts"
-    rm -rf "$PTERO_PATH/resources/views"
     cp -r "$ARCHIVE_SOURCE/resources/scripts" "$PTERO_PATH/resources/scripts"
-    cp -r "$ARCHIVE_SOURCE/resources/views" "$PTERO_PATH/resources/views"
-    ok "  Frontend replaced (Pterodactyl React → Archive React)"
+    ok "  Frontend scripts replaced (Pterodactyl React → Archive React)"
+
+    # 4e.2 Override specific Blade views (layouts/app.blade.php, templates/base/core.blade.php)
+    #     These mount our React app instead of Pterodactyl's. Other Pterodactyl views
+    #     (auth, admin, errors) stay intact so controllers don't 500.
+    log "  Overriding base Blade views to mount Archive React app..."
+    mkdir -p "$PTERO_PATH/resources/views/layouts"
+    mkdir -p "$PTERO_PATH/resources/views/templates/base"
+    cp -f "$ARCHIVE_SOURCE/resources/views/layouts/app.blade.php" "$PTERO_PATH/resources/views/layouts/app.blade.php"
+    cp -f "$ARCHIVE_SOURCE/resources/views/templates/base/core.blade.php" "$PTERO_PATH/resources/views/templates/base/core.blade.php"
+    cp -f "$ARCHIVE_SOURCE/resources/views/templates/wrapper.blade.php" "$PTERO_PATH/resources/views/templates/wrapper.blade.php"
+    ok "  Base views overridden (loads Vite bundle, not Pterodactyl webpack)"
 
     # 4f. Replace package.json + build configs (use -f to overwrite)
     log "  Updating build configuration..."
