@@ -396,8 +396,12 @@ stage_deps() {
     log "  Installing npm dependencies..."
     if ! npm ci --no-audit --no-fund 2>&1 | tail -5 | tee -a "$LOG_FILE"; then
         warn "npm ci failed (no lockfile?) — falling back to npm install"
+        # Try regular install first
         if ! npm install --no-audit --no-fund 2>&1 | tail -5 | tee -a "$LOG_FILE"; then
-            err "npm install failed"
+            warn "npm install failed (peer dep conflict?) — retrying with --legacy-peer-deps"
+            if ! npm install --no-audit --no-fund --legacy-peer-deps 2>&1 | tail -5 | tee -a "$LOG_FILE"; then
+                err "npm install failed even with --legacy-peer-deps. Check $LOG_FILE"
+            fi
         fi
     fi
     ok "  npm dependencies installed"

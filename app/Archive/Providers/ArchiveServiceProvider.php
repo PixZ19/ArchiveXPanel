@@ -19,7 +19,8 @@ class ArchiveServiceProvider extends ServiceProvider
     public function register(): void
     {
         // Merge Archive config
-        $this->mergeConfigFrom(__DIR__ . '/../../config/archive.php', 'archive');
+        // __DIR__ = app/Archive/Providers/  →  ../../../config/archive.php = project root config
+        $this->mergeConfigFrom(__DIR__ . '/../../../config/archive.php', 'archive');
 
         // Bind the AI provider registry as a singleton
         $this->app->singleton(ProviderRegistry::class, function ($app) {
@@ -35,14 +36,14 @@ class ArchiveServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Load Archive migrations (separate dir keeps them isolated from Ptero's)
-        $this->loadMigrationsFrom(__DIR__ . '/../../database/migrations/archive');
+        $this->loadMigrationsFrom(__DIR__ . '/../../../database/migrations/archive');
 
         // Load Archive routes (registered under /api/archive/*)
-        $this->loadRoutesFrom(__DIR__ . '/../../routes/archive.php');
+        $this->loadRoutesFrom(__DIR__ . '/../../../routes/archive.php');
 
         // Publish config (php artisan vendor:publish --tag=archive-config)
         $this->publishes([
-            __DIR__ . '/../../config/archive.php' => config_path('archive.php'),
+            __DIR__ . '/../../../config/archive.php' => config_path('archive.php'),
         ], 'archive-config');
 
         // Rate limiter for AI requests
