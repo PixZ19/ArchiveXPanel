@@ -351,8 +351,17 @@ stage_merge() {
     cp -f "$ARCHIVE_SOURCE/tsconfig.json" "$PTERO_PATH/tsconfig.json"
     cp -f "$ARCHIVE_SOURCE/tailwind.config.cjs" "$PTERO_PATH/tailwind.config.cjs"
     cp -f "$ARCHIVE_SOURCE/postcss.config.cjs" "$PTERO_PATH/postcss.config.cjs" 2>/dev/null || true
-    # Remove conflicting legacy configs
-    rm -f "$PTERO_PATH/webpack.config.js" "$PTERO_PATH/babel.config.js" "$PTERO_PATH/yarn.lock"
+    # Remove ALL conflicting legacy configs from Pterodactyl
+    # CRITICAL: postcss.config.js and tailwind.config.js (old Pterodactyl versions)
+    # must be deleted because Node's resolver picks .js over .cjs when both exist.
+    # The old postcss.config.js requires postcss-import/postcss-nesting/postcss-preset-env
+    # which aren't in Archive's package.json — causing MODULE_NOT_FOUND during build.
+    rm -f "$PTERO_PATH/webpack.config.js" \
+          "$PTERO_PATH/babel.config.js" \
+          "$PTERO_PATH/yarn.lock" \
+          "$PTERO_PATH/postcss.config.js" \
+          "$PTERO_PATH/tailwind.config.js" \
+          "$PTERO_PATH/jest.config.js"
     # Remove node_modules + package-lock so npm install starts fresh with new package.json
     rm -rf "$PTERO_PATH/node_modules" "$PTERO_PATH/package-lock.json"
     ok "  Build configs updated (Vite + TypeScript + Tailwind v3)"
