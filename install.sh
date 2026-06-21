@@ -434,17 +434,35 @@ stage_migrate() {
 
     cd "$PTERO_PATH"
 
-    # If a previous run partially created the archive_themes table, drop it
-    # so the migration can run cleanly. This is safe because the table is
-    # Archive-specific (no Pterodactyl data in it).
+    # If a previous run partially created the archive_themes table OR left stale
+    # migration records, clean up BOTH so the migration can run cleanly.
+    # This is safe because:
+    #   - archive_themes contains only Archive data (never Pterodactyl data)
+    #   - The migration records are for Archive migrations only (prefix 2025_01_01_)
     log "  Checking for partial migration state..."
     php artisan tinker --execute="
+        \$cleaned = [];
+        // Drop the table if it exists (partial or complete)
         if (\Schema::hasTable('archive_themes')) {
             \Schema::dropIfExists('archive_themes');
-            echo 'dropped_partial';
-        } else {
-            echo 'clean';
+            \$cleaned[] = 'dropped_table';
         }
+        // Drop the users column if it exists (from previous migration)
+        if (\Schema::hasColumn('users', 'archive_theme_id')) {
+            \Schema::table('users', function (\$table) {
+                \$table->dropIndex(['archive_theme_id']);
+            });
+            \Schema::table('users', function (\$table) {
+                \$table->dropColumn('archive_theme_id');
+            });
+            \$cleaned[] = 'dropped_column';
+        }
+        // Delete stale migration records so Laravel re-runs them
+        \$deleted = \DB::table('migrations')->where('migration', 'like', '2025_01_01_%')->delete();
+        if (\$deleted > 0) {
+            \$cleaned[] = 'deleted_' . \$deleted . '_stale_records';
+        }
+        echo empty(\$cleaned) ? 'clean' : implode(', ', \$cleaned);
     " 2>&1 | tee -a "$LOG_FILE" || true
 
     if ! php artisan migrate --path=database/migrations/archive --force 2>&1 | tee -a "$LOG_FILE"; then
