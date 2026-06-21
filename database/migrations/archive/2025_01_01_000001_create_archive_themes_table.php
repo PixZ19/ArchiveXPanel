@@ -25,11 +25,15 @@ return new class extends Migration {
             $table->json('overrides')->nullable();
             $table->enum('scope', ['installation', 'workspace', 'user'])->default('installation');
             $table->boolean('is_default')->default(false);
-            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            // Use unsignedBigInteger without FK constraint — avoids MySQL errno 150
+            // (charset/engine mismatch with Pterodactyl's users table across versions).
+            // Eloquent handles the relationship at the application layer.
+            $table->unsignedBigInteger('created_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
             $table->index(['scope', 'is_default']);
+            $table->index('created_by');
         });
 
         // Seed a default installation theme

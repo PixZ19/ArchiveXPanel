@@ -425,6 +425,19 @@ stage_migrate() {
 
     cd "$PTERO_PATH"
 
+    # If a previous run partially created the archive_themes table, drop it
+    # so the migration can run cleanly. This is safe because the table is
+    # Archive-specific (no Pterodactyl data in it).
+    log "  Checking for partial migration state..."
+    php artisan tinker --execute="
+        if (\Schema::hasTable('archive_themes')) {
+            \Schema::dropIfExists('archive_themes');
+            echo 'dropped_partial';
+        } else {
+            echo 'clean';
+        }
+    " 2>&1 | tee -a "$LOG_FILE" || true
+
     if ! php artisan migrate --path=database/migrations/archive --force 2>&1 | tee -a "$LOG_FILE"; then
         err "Migration failed — initiating rollback"
         archive_rollback
