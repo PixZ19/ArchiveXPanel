@@ -1,0 +1,47 @@
+# Archive Panel .gitignore
+
+# Dependencies
+node_modules/
+vendor/
+
+# Build output
+public/build/
+public/js/
+public/css/
+bootstrap/cache/*.php
+!bootstrap/cache/.gitignore
+
+# Environment
+.env
+.env.*
+!.env.example
+!.env.ci
+
+# Storage (user-generated content — never commit)
+storage/
+!storage/.gitignore
+
+# Logs
+*.log
+storage/logs/*.log
+!storage/logs/.gitignore
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Temp
+*.tmp
+*.bak
+*.cache

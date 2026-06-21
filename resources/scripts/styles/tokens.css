@@ -1,0 +1,247 @@
+/*
+ * Archive Panel — Design System
+ * ----------------------------------------------------------------------------
+ * Every token is a CSS custom property. Components read from these tokens via
+ * Tailwind classes (which themselves read from CSS variables). To change the
+ * theme at runtime, swap the variable map on :root — every component repaints.
+ *
+ * Three theme variants ship out of the box:
+ *   - Dark       (default) — deep space, indigo→cyan accents
+ *   - Light      — clean surfaces, same accent family
+ *   - AMOLED     — true black surfaces for OLED displays
+ *
+ * Density overlays (compact / comfortable / spacious / accessibility) sit on
+ * top of the theme and adjust spacing + font sizes only.
+ */
+
+/* ============ DEFAULT THEME: DARK ============ */
+:root,
+[data-theme='dark'] {
+  --c-bg: 10 11 20;
+  --c-surface: 18 20 31;
+  --c-surface-2: 26 29 46;
+  --c-surface-3: 35 38 57;
+
+  --c-border: 255 255 255 / 0.08;
+  --c-border-strong: 255 255 255 / 0.14;
+
+  --c-text: 232 234 240;
+  --c-text-muted: 156 163 181;
+  --c-text-dim: 107 114 128;
+
+  --c-accent: 99 102 241;
+  --c-accent-2: 34 211 238;
+  --c-accent-3: 167 139 250;
+
+  --c-success: 52 211 153;
+  --c-warning: 251 191 36;
+  --c-danger: 248 113 113;
+
+  --gradient: linear-gradient(135deg, #6366F1 0%, #22D3EE 100%);
+  --gradient-soft: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(34, 211, 238, 0.10) 100%);
+  --gradient-text: linear-gradient(135deg, #818CF8 0%, #22D3EE 100%);
+
+  --glass-bg: rgba(26, 29, 46, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.10);
+  --glass-blur: 12px;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Liberation Mono', monospace;
+  --fs-body: 14px;
+  --fs-sm: 12px;
+  --fs-xs: 11px;
+  --fs-2xl: 24px;
+  --fs-3xl: 32px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 24px rgba(99, 102, 241, 0.3);
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.4);
+
+  --dur-fast: 120ms;
+  --dur-base: 220ms;
+  --dur-slow: 400ms;
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+}
+
+[data-theme='light'] {
+  --c-bg: 247 248 250;
+  --c-surface: 255 255 255;
+  --c-surface-2: 243 244 247;
+  --c-surface-3: 233 234 238;
+
+  --c-border: 0 0 0 / 0.10;
+  --c-border-strong: 0 0 0 / 0.18;
+
+  --c-text: 17 24 39;
+  --c-text-muted: 75 85 99;
+  --c-text-dim: 107 114 128;
+
+  --c-accent: 79 70 229;
+  --c-accent-2: 6 182 212;
+  --c-accent-3: 124 58 237;
+
+  --gradient: linear-gradient(135deg, #4F46E5 0%, #06B6D4 100%);
+  --gradient-soft: linear-gradient(135deg, rgba(79, 70, 229, 0.08) 0%, rgba(6, 182, 212, 0.06) 100%);
+  --gradient-text: linear-gradient(135deg, #4F46E5 0%, #06B6D4 100%);
+
+  --glass-bg: rgba(255, 255, 255, 0.70);
+  --glass-border: rgba(0, 0, 0, 0.08);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
+  --shadow-glow: 0 0 24px rgba(79, 70, 229, 0.15);
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='amoled'] {
+  --c-bg: 0 0 0;
+  --c-surface: 8 8 12;
+  --c-surface-2: 16 16 22;
+  --c-surface-3: 24 24 32;
+
+  --c-border: 255 255 255 / 0.06;
+  --c-border-strong: 255 255 255 / 0.12;
+
+  --c-text: 240 240 245;
+  --c-text-muted: 140 140 160;
+  --c-text-dim: 90 90 110;
+
+  --c-accent: 99 102 241;
+  --c-accent-2: 34 211 238;
+  --c-accent-3: 167 139 250;
+
+  --glass-bg: rgba(8, 8, 12, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.08);
+}
+
+[data-density='compact'] {
+  --fs-body: 13px;
+  --fs-sm: 11px;
+  --fs-2xl: 20px;
+  --fs-3xl: 28px;
+  --space-1: 3px;
+  --space-2: 6px;
+  --space-3: 10px;
+  --space-4: 12px;
+  --space-6: 18px;
+  --space-8: 24px;
+  --radius-lg: 10px;
+}
+
+[data-density='spacious'] {
+  --fs-body: 16px;
+  --fs-sm: 14px;
+  --fs-2xl: 28px;
+  --fs-3xl: 40px;
+  --space-1: 6px;
+  --space-2: 12px;
+  --space-3: 18px;
+  --space-4: 24px;
+  --space-6: 36px;
+  --space-8: 48px;
+}
+
+[data-density='accessibility'] {
+  --fs-body: 17px;
+  --fs-sm: 15px;
+  --c-text: 255 255 255;
+  --c-text-muted: 200 200 220;
+  --c-bg: 5 5 10;
+  --c-surface: 12 12 20;
+  --c-surface-2: 20 20 32;
+  --c-border: 255 255 255 / 0.20;
+  --glass-bg: rgba(20, 20, 32, 1);
+  --glass-blur: 0px;
+  --dur-fast: 0ms;
+  --dur-base: 0ms;
+  --dur-slow: 0ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-base: 0ms;
+    --dur-slow: 0ms;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: rgb(var(--c-bg));
+  color: rgb(var(--c-text));
+  font-family: var(--font-sans), sans-serif;
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color var(--dur-base) var(--ease-standard),
+              color var(--dur-base) var(--ease-standard);
+}
+
+::selection {
+  background: rgb(var(--c-accent) / 0.30);
+  color: rgb(var(--c-text));
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: rgb(var(--c-bg)); }
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--c-surface-3));
+  border-radius: var(--radius-md);
+  border: 2px solid rgb(var(--c-bg));
+}
+::-webkit-scrollbar-thumb:hover { background: rgb(var(--c-accent) / 0.5); }
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: rgb(var(--c-text));
+}
+
+a {
+  color: rgb(var(--c-accent-2));
+  text-decoration: none;
+  transition: color var(--dur-fast) var(--ease-standard);
+}
+a:hover { color: rgb(var(--c-accent)); }
+
+code, pre { font-family: var(--font-mono), monospace; font-size: 0.9em; }
+button { font-family: inherit; cursor: pointer; }
+
+.gradient-text {
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+}
