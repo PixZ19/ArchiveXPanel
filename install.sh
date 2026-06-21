@@ -485,9 +485,9 @@ stage_build() {
     fi
     ok "Frontend built → public/build/"
 
-    # Verify manifest exists
-    if [[ ! -f "public/build/manifest.json" ]]; then
-        err "public/build/manifest.json missing — build silently failed"
+    # Verify manifest exists. Vite 5+ puts it at .vite/manifest.json (with leading dot).
+    if [[ ! -f "public/build/manifest.json" && ! -f "public/build/.vite/manifest.json" ]]; then
+        err "Vite manifest missing — build silently failed"
     fi
     ok "Build manifest present"
 }
