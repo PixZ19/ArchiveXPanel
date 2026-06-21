@@ -313,24 +313,27 @@ stage_merge() {
     fi
 
     # 4a. Copy the Archive backend (additive — does NOT overwrite Pterodactyl files)
+    #     rm -rf first so re-runs do a CLEAN REPLACE, not a merge (cp -r merges into existing dirs)
     log "  Copying app/Archive/..."
+    rm -rf "$PTERO_PATH/app/Archive"
     cp -r "$ARCHIVE_SOURCE/app/Archive" "$PTERO_PATH/app/Archive"
     ok "  app/Archive/ installed"
 
     # 4b. Copy Archive migrations
     log "  Copying database/migrations/archive/..."
+    rm -rf "$PTERO_PATH/database/migrations/archive"
     mkdir -p "$PTERO_PATH/database/migrations/archive"
     cp -r "$ARCHIVE_SOURCE"/database/migrations/archive/*.php "$PTERO_PATH/database/migrations/archive/"
     ok "  database/migrations/archive/ installed"
 
     # 4c. Copy routes
     log "  Copying routes/archive.php..."
-    cp "$ARCHIVE_SOURCE/routes/archive.php" "$PTERO_PATH/routes/archive.php"
+    cp -f "$ARCHIVE_SOURCE/routes/archive.php" "$PTERO_PATH/routes/archive.php"
     ok "  routes/archive.php installed"
 
     # 4d. Copy config
     log "  Copying config/archive.php..."
-    cp "$ARCHIVE_SOURCE/config/archive.php" "$PTERO_PATH/config/archive.php"
+    cp -f "$ARCHIVE_SOURCE/config/archive.php" "$PTERO_PATH/config/archive.php"
     ok "  config/archive.php installed"
 
     # 4e. Replace the frontend entirely (Pterodactyl's React → Archive's React)
@@ -341,15 +344,17 @@ stage_merge() {
     cp -r "$ARCHIVE_SOURCE/resources/views" "$PTERO_PATH/resources/views"
     ok "  Frontend replaced (Pterodactyl React → Archive React)"
 
-    # 4f. Replace package.json + build configs
+    # 4f. Replace package.json + build configs (use -f to overwrite)
     log "  Updating build configuration..."
-    cp "$ARCHIVE_SOURCE/package.json" "$PTERO_PATH/package.json"
-    cp "$ARCHIVE_SOURCE/vite.config.ts" "$PTERO_PATH/vite.config.ts"
-    cp "$ARCHIVE_SOURCE/tsconfig.json" "$PTERO_PATH/tsconfig.json"
-    cp "$ARCHIVE_SOURCE/tailwind.config.cjs" "$PTERO_PATH/tailwind.config.cjs"
-    cp "$ARCHIVE_SOURCE/postcss.config.cjs" "$PTERO_PATH/postcss.config.cjs" 2>/dev/null || true
+    cp -f "$ARCHIVE_SOURCE/package.json" "$PTERO_PATH/package.json"
+    cp -f "$ARCHIVE_SOURCE/vite.config.ts" "$PTERO_PATH/vite.config.ts"
+    cp -f "$ARCHIVE_SOURCE/tsconfig.json" "$PTERO_PATH/tsconfig.json"
+    cp -f "$ARCHIVE_SOURCE/tailwind.config.cjs" "$PTERO_PATH/tailwind.config.cjs"
+    cp -f "$ARCHIVE_SOURCE/postcss.config.cjs" "$PTERO_PATH/postcss.config.cjs" 2>/dev/null || true
     # Remove conflicting legacy configs
     rm -f "$PTERO_PATH/webpack.config.js" "$PTERO_PATH/babel.config.js" "$PTERO_PATH/yarn.lock"
+    # Remove node_modules + package-lock so npm install starts fresh with new package.json
+    rm -rf "$PTERO_PATH/node_modules" "$PTERO_PATH/package-lock.json"
     ok "  Build configs updated (Vite + TypeScript + Tailwind v3)"
 
     # 4g. Copy installer + README
